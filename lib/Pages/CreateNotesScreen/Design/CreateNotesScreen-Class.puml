@@ -1,0 +1,67 @@
+FOR CLASS DIAGRAM BASIC CONFIGURATIONS
+@startuml CreateNotesScreen-Class Diagram
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title 'CreateNotesScreen-Class Diagram'
+package Pages{
+    package CreateNotesScreen{
+        class CreateNotesScreen{
+            - _CreateNotesScreenVM : CreateNotesScreenVM
+            - _titleTextEditingController : TextEditingCOntroller
+            - _descriptionTextEditingController : TextEditingCOntroller
+            + initState() : void
+            + dispose() : void
+        }
+        class CreateNotesScreenModel{
+            ' changes
+            + @title : String
+            + @description : String
+            + @listOfNotes : List<NoteBO>
+            + @creationStatus : bool
+            + @errorCode : int
+        }
+        class CreateNotesScreenVM{
+            + navigateToHomeScreen() : void
+            'changes
+            'we create instance inside thid method and assign the value to the constructor method.
+            + createNewNote(String enteredTitle, String enteredDescription) : void
+            + updateTitle(String title) : void
+            + updateDescription(String description) : void
+        }
+    }
+}
+package Services{
+    package PlatformServices{
+        package PlatformSharedPreferenceService{
+            interface IPlatformSharedPreferenceService{
+                + saveNote(String key, List<NoteBO> value): Future<ServiceResult<bool>>
+                + retriveData(String key) : Future<ServiceResult<List<NoteBO>>>
+            }
+        }
+    }
+}
+package BOs{
+    package NoteBO{
+        class NoteBO{
+              + title : String
+              + description : String
+        }
+    }
+}
+CreateNotesScreen --> CreateNotesScreenVM : uses
+CreateNotesScreenVM --> CreateNotesScreenModel : extends
+CreateNotesScreenVM --> IPlatformSharedPreferenceService 
+CreateNotesScreenVM --> NoteBO 
+@enduml

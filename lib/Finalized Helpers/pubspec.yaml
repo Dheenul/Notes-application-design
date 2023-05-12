@@ -1,0 +1,17 @@
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: 
+  dart_json_mapper: 
+  dio: 
+  flutter_mobx: 
+  get_it: 
+  internet_connection_checker:
+  mobx: 
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: 
+  build_runner: 
+  mobx_codegen: 

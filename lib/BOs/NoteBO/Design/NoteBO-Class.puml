@@ -1,0 +1,58 @@
+FOR CLASS DIAGRAM BASIC CONFIGURATIONS
+@startuml NoteBO-Class Diagram
+
+title 'NoteBO Class Diagram'
+
+package BOs{
+    package NoteBO{
+        class NoteBO{
+            + title : String
+            + description : String
+            + constructor(this.title, this.description) : void 
+        }
+        class NoteBOExtension {
+            + sortNotesInAscending() : List<NoteBO>
+        }
+    }
+}
+package Services{
+    package PlatformService{
+        package PlatformSharedPreferenceService{
+            class IPlatformSharedPreferenceService{
+                + getAllNotes() : Future<ServiceResult<List<NoteBO>>>
+            }
+        }
+    }
+}
+package Pages{
+    package NotesListScreen{
+        class NotesListScreenVM{
+            ' changes
+            ' + retrivedNotesList : List<NoteBO>
+            ' + @sortedList : List<NoteBO>
+            ' + @retrivalStatus : bool
+        }
+    }
+}
+NoteBOExtension --> NoteBO
+NoteBO <-- IPlatformSharedPreferenceService
+NoteBO --> NotesListScreenVM
+
+newpage
+title 'NoteBOExtension-Class Diagram'
+package BOs{
+    package NoteBO{
+        class NoteBOExtension {
+            + sortNotesInAscending() : List<NoteBO>
+        }
+    }
+}
+package Pages{
+    package NotesListScreen{
+        class NotesListScreenVM{
+            + sortNotesList() : void
+        }
+    }
+}
+NotesListScreenVM --> NoteBOExtension
+@enduml

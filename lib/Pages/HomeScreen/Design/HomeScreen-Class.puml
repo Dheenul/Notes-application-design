@@ -1,0 +1,36 @@
+FOR CLASS DIAGRAM BASIC CONFIGURATIONS
+@startuml HomeScreen-Class Diagram
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title 'HomeScreen-Class Diagram'
+package Pages{
+    package HomeScreen{
+        class HomeScreen{
+            - _homeScreenVM : HomeScreenVM
+            + initState() : void
+            + dispose() : void 
+        }
+        class HomeScreenModel{
+
+        }
+        class HomeScreenVM{
+            + navigateToCreateNotesScreen() : void
+            + navigateToNotesListScreen() : void
+        }
+    }
+}
+HomeScreen --> HomeScreenVM : uses
+HomeScreenVM --> HomeScreenModel : extends
+@enduml

@@ -1,0 +1,94 @@
+FOR SEQUENCE AND PSEUDOCODE BASIC CONFIGURATIONS AND BASIC STRUCTURE 
+
+@startuml CreateNotesScreen-Sequence-Pseudo
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title Initial State
+autonumber 1
+hide footbox
+participant User as U
+participant CreateNotesScreen as S
+U -> S : Invokes initState() 
+activate U
+activate S
+S -> S : Start the stream **titleTextEditingController** to listen
+alt #NUETRALRESPONSE if (event == AddText)
+    S -> S: Assign the event's data as titleTextEditingController text
+    S -> S: Collapse the selection
+    note right
+        To get the correct cursor
+        position, use the collapsed built-in
+        method to make the selection to the last
+    end note
+    S --> U: Displays the text in title field
+end
+S -> S : Start the stream **descriptionTextEditingController** to listen
+alt #NUETRALRESPONSE if(event == AddText)
+    S -> S: Assign the event's data as _descriptionTextEditingController text
+    S -> S: Collapse the selection
+    note right
+        To get the correct cursor
+        position, use the collapsed built-in
+        method to make the selection to the last
+    end note
+    S --> U: Displays the text in description field
+end
+S -> S : Start the stream **navigationStream** to listen
+alt #NUETRALRESPONSE if(event == NavigatorPop)
+    S -> S : Pop to the Home screen
+    S --> U : Display the HomeScreen to the user
+end 
+deactivate U
+deactivate S
+
+newpage title field
+participant CreateNotesScreenVM as SVM
+autonumber 1
+hide footbox
+U -> S : TextFormField.Clicked
+activate U
+activate S
+S -> SVM : Invokes **updateTitle(required String title)**
+activate SVM
+SVM --> S : Returns
+deactivate SVM
+S --> U : Returns
+deactivate S
+deactivate U
+
+newpage description field
+autonumber 1
+hide footbox
+U -> S : TextFormField.Clicked
+activate U
+activate S
+S -> SVM : Invokes **updateDescription(required String description)**
+activate SVM
+SVM --> S : Returns
+deactivate SVM
+S --> U : Returns
+deactivate S
+deactivate U
+
+newpage On click of Back to Home button
+autonumber 1
+hide footbox
+U -> S : Create Notes button.clicked
+activate
+==PSEUDOCODE==
+hnote across
+end hnote
+
+@enduml

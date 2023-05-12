@@ -1,0 +1,67 @@
+FOR CLASS DIAGRAM BASIC CONFIGURATIONS
+@startuml NotesListScreen-Class Diagram
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title 'NotesListScreen-Class Diagram'
+package Pages{
+    package NotesListScreen{
+        class NotesListScreen{
+            - _notesListScreenVM : notesListScreenVM
+            + initState() : void
+            + dispose() : void
+        }
+        class NotesListScreenModel{
+            'add error code variable
+            'add the instance as observable variable in all places 
+            ' + newNote : NoteBO
+            + listOfNotes : List<NoteBO>
+            + @sortedListOfNotes : List<NoteBO>
+            + @errorCode : int
+            + @retrievelStatus : bool
+        }
+        class NotesListScreenVM{
+            + navigateToHomeScreen() : void
+            + retriveListOfNotes(String Key) : void
+            + sortNotesList() : void
+        }
+    }
+}
+package BOs{
+    package NoteBO{
+        class NoteBO{
+            + title : String
+            + description : String
+        }
+        class NoteBOExtension {
+            + sortNotesInAscending() : List<NoteBO>
+        }
+    }
+}
+package Services{
+    package PlatformServices{
+        package PlatformSharedPreferenceService{
+            interface IPlatformSharedPreferenceService{
+                + saveNote(String key, List<NoteBO> value) : Future<ServiceResult<bool>>
+                + retriveData(String key) : Future<ServiceResult<List<NoteBO>>>
+            }
+        }
+    }
+}
+NoteBOExtension --> NoteBO 
+NotesListScreenVM --> NoteBOExtension
+NotesListScreen --> NotesListScreenVM : uses
+NotesListScreenVM --> NotesListScreenModel : extends
+NotesListScreenVM --> IPlatformSharedPreferenceService 
+@enduml
