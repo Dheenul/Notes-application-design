@@ -31,14 +31,16 @@ package Pages{
             + @listOfNotes : List<NoteBO>
             + @creationStatus : bool
             + @errorCode : int
+            + @visibilityStatus : bool
         }
         class CreateNotesScreenVM{
             + navigateToHomeScreen() : void
             'changes
             'we create instance inside thid method and assign the value to the constructor method.
-            + createNewNote(String enteredTitle, String enteredDescription) : void
+            + createNewNote(String enteredTitle, String enteredDescription) : Future<void>
             + updateTitle(String title) : void
             + updateDescription(String description) : void
+            + disposeStreams() : void
         }
     }
 }

@@ -33,8 +33,9 @@ package Pages{
         }
         class NotesListScreenVM{
             + navigateToHomeScreen() : void
-            + retriveListOfNotes(String Key) : void
+            + retriveListOfNotes(String Key) : Future<void>
             + sortNotesList() : void
+            + disposeStreams() : void
         }
     }
 }

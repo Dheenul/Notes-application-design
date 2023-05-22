@@ -1,0 +1,124 @@
+@startuml NotesListScreen-Sequence-Pseudo
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title Initial State
+autonumber 1
+hide footbox
+actor User as U
+participant NotesListScreen as S
+participant NotesListScreenVM as SVM
+U -> S : Invokes **initstate()**
+activate U
+activate S
+alt TRY
+    S -> S : Start the stream **navigationStream** to listen
+    alt #NUETRALRESPONSE if(event == NavigatorPop)
+        S -> S : Pop to the Home screen
+        S --> U : Display the HomeScreen to the user
+    end 
+    S -> SVM : Invoke **retriveListOfNotes(String Key)**
+    activate SVM
+    SVM --> S : Returns 
+    deactivate SVM
+    alt #POSITIVERESPONSE if(retrievelStatus == true)
+        S --> U : Display the list of notes retrived and stored in **listOfNotes** to the user
+        else #NEGATIVEERESPONSE
+        S --> U : Display the error code with error message "Retrival failed" to the user
+        deactivate S
+        deactivate U
+    end
+else CATCH
+    S -> S : write log Exceptions
+    S --> U : Returns
+    deactivate U
+    deactivate S
+end 
+
+==PSEUDOCODE - initState()==
+hnote across
+
+    TRY
+
+        ADD listener to the **navigationStream** and listen to the events in the stream
+
+        IF event is **NavigatorPop**
+
+            Pop to the home screen
+
+        INVOKE **retriveListOfNotes(String Key)** 
+
+        IF retrievelStatus is true
+
+            DISPLAY the list of notes to the user
+        
+        ELSE
+
+             DISPLAY the error code with error message "Retrival failed" to the user
+        
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+
+end hnote
+
+
+
+
+
+newpage sort button.clicked
+autonumber 1
+hide footbox
+U -> S : sort button.clicked
+activate U 
+activate S
+S -> SVM : Invoke **sortNotesList()**
+activate SVM
+SVM -> S : Returns
+deactivate SVM
+S -> U : Displays the list of notes **sortedListOfNotes** \n which is sorted based on notes title.
+deactivate S
+deactivate U
+==PSEUDOCODE - initState()==
+hnote across
+
+    INVOKE **sortNotesList()**
+
+    DISPLAY the list of notes **sortedListOfNotes** which is sorted based on notes title to the user
+
+end hnote
+
+
+
+
+newpage On click of Back to Home button
+autonumber 1
+hide footbox
+U -> S : Back to Home button.clicked
+S -> SVM : Invokes **navigateToHomeScreen()**
+activate SVM
+SVM --> S : Returns
+deactivate SVM
+S --> U : Display Home Screen to the user
+deactivate S
+deactivate U
+==PSEUDOCODE - Back to Home button.clicked==
+hnote across
+
+    INVOKE **navigateToHomeScreen()** 
+
+    DISPLAY the Home Screen to the user
+
+end note
+

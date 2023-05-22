@@ -1,0 +1,90 @@
+@startuml UserPreference
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+
+title saveNote(String key, List<NoteBO> value) service method
+autonumber
+hide footbox
+participant C as C
+participant Service as Service
+C -> Service: Invokes **saveNote(String key, List<NoteBO> value)**
+activate C
+activate Service
+alt #POSITIVERESPONSE TRY
+    Service -> Service: Create a map **notesList** and \n store the value against **data** key
+    Service-> Service:Serialize the **notesList** and \n store the result in a **encodedData** variable
+    Service -> Service: Set the **encodedData** in \n sharedPreferences against the key. 
+    alt #POSITIVERESPONSE result == true
+        Service --> C: Return true
+    else #NEGATIVEERESPONSE
+        Service --> C: Return false
+    end
+else #NEGATIVEERESPONSE CATCH
+    Service -> Service : write log Exceptions
+    Service --> C : Returns
+    deactivate C
+    deactivate Service
+end
+==PSEUDOCODE - saveNote(String key, List<NoteBO> value)==
+hnote across
+    TRY 
+
+        CREATE a map named **notesList** and STORE the value against **data** key
+
+        SERALIZE the **notesList** and store the result in a **encodedData** variable
+
+        SET the **encodedData** in sharedPreferences against the key.
+
+    CATCH
+
+         INVOKE **writeException()** on the exception object **ex**
+
+end note
+
+
+
+
+
+newpage retriveData() service method
+autonumber
+hide footbox
+C -> Service: Invoke retriveData(String key)
+activate C
+activate Service
+alt #POSITIVERESPONSE TRY
+    Service -> Service: Retrieve the data by passing the **key** to getString() \n and  store the result in **retrivedData**
+    Service -> Service: Deserialize the **retrivedData** \n and store it **decodedData** variable
+    alt #POSITIVERESPONSE decodedData != null
+        Service --> C:Return the **decodedData**
+    else #NEGATIVEERESPONSE
+        Service --> C: Return null
+    end
+else #NEGATIVEERESPONSE CATCH
+    Service -> Service : write log Exceptions
+    Service --> C : Returns
+    deactivate C
+    deactivate Service
+end
+==PSEUDOCODE - saveNote(String key, List<NoteBO> value)==
+hnote across
+    TRY 
+        RETRIVE the data by passing the **key** to getString() and  store the result in **retrivedData**
+        DESERIALIZE the **retrivedData** and store it **decodedData** variable
+
+    CATCH
+
+         INVOKE **writeException()** on the exception object **ex**
+
+end note

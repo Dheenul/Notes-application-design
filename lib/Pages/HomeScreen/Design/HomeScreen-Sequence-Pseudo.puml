@@ -15,34 +15,70 @@ skinparam sequence{
     ArrowFontColor #234E70
 }
 
-title 'CreateNotesScreen Sequence diagram and pseudo code'
+title 'CreateNotesScreen Sequence diagram and pseudo code - initState '
 autonumber 1
 hide footbox
-User -> HomeScreen : Invokes **initState()**
-activate User  
-activate HomeScreen
-HomeScreen -> HomeScreen : Start the stream "navigationStream" to listen
-alt #POSITIVERESPONSE if(event == NavigatorPush)
-    HomeScreen -> HomeScreen : push to page from **event.pageConfig** with data **event.data**
-        alt #POSITIVERESPONSE if(event.pageConfig == Pages.CreateNotesScreen)
-             HomeScreen --> User : Display the CreateNotes screen to the user.
-        end
-        alt #POSITIVERESPONSE if(event.pageConfig == Pages.NotesListScreen)
-             HomeScreen --> User : Display the NotesList screen to the user.
-        end
+participant User as U
+participant HomeScreen as S
+participant HomeScreenVM as SVM
+U -> S : Invokes **initState()**
+activate U  
+activate S
+alt TRY
+    S -> S : Start the stream "navigationStream" to listen
+    alt #POSITIVERESPONSE if(event == NavigatorPush)
+        S -> S : push to page from **event.pageConfig** with data **event.data**
+            alt #POSITIVERESPONSE if(User clicks on the Create Notes button)
+                S --> U : Display the CreateNotes screen to the user.
+            end
+            alt #POSITIVERESPONSE if(User clicks on the Retrive Notes button)
+                S --> U : Display the NotesList screen to the user.
+            end
+    end
+    deactivate U
+    deactivate S
+else CATCH
+    S -> S : write log Exceptions
+    S --> U : Returns
+    deactivate U
+    deactivate S
 end
-deactivate User
-deactivate HomeScreen
 
-==PSEUDOCODE - navigationStream for navigation to different pages==
+
+==PSEUDOCODE - initState()==
 hnote across
 
-    LISTEN to the stream **navigationStream** 
+    ADD listener to the **navigationStream** and listen to the events in the stream 
 
     IF **event == NavigatorPush**
 
-        Using **context.push** set the value for **pageConfig** as **event.pageConfig** and value for **data** as **event.data** 
+        Using **context.push** set the value for **pageConfig** as **event.pageConfig** and value for **data** as **event.data** and navigate to the respective page
 
 end hnote
+
+
+
+
+
+newpage dispose() method
+autonumber 1
+hide footbox
+U -> S : Invokes **dispose()**
+activate U
+activate S
+S -> SVM : Invokes **disposeStreams()**
+activate SVM
+SVM --> S : Returns
+deactivate SVM
+S --> U : Returns
+deactivate S
+deactivate U 
+==PSEUDOCODE - dispose()==
+hnote across
+
+    INVOKE **disposeStreams()** 
+
+hnote end 
+
 
 @enduml

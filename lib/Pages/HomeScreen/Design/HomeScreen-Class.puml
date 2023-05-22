@@ -28,6 +28,7 @@ package Pages{
         class HomeScreenVM{
             + navigateToCreateNotesScreen() : void
             + navigateToNotesListScreen() : void
+            + disposeStreams() : void
         }
     }
 }

@@ -18,11 +18,11 @@ skinparam sequence{
 title 'NoteBOExtension - listOfNoteBO.sortNoteInAscending()'
 autonumber 1
 hide footbox
-Caller -> NoteBOExtension : Invokes **listOfNoteBO.sortNoteInAscending()**
+Caller -> NoteBOExtension : Invoke **listOfNoteBO.sortNoteInAscending()**
 activate Caller
 activate NoteBOExtension
 NoteBOExtension -> NoteBOExtension : Sort the **listOfNoteBO** using **sort()** and use **compareTo()** \n to compare the list based on the notes title.
-NoteBOExtension -> Caller : Returns List<NoteBO>
+NoteBOExtension -> Caller : Return List<NoteBO>
 deactivate NoteBOExtension
 deactivate Caller
 

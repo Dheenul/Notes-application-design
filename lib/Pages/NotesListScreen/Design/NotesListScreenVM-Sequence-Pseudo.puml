@@ -1,0 +1,163 @@
+@startuml CreateNotesScreen-VM-Sequence
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title retrive list of notes
+autonumber 1
+hide footbox
+participant Caller as C
+participant NotesListScreenVM as SVM
+C -> SVM : Invoke **retriveListOfNotes(String Key)**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Set the value for **retrievelStatus** as **false**
+    SVM -> PlatformSharedPreferenceService : Invoke **retriveData(String key)** and pass values to the parameter
+    activate PlatformSharedPreferenceService
+    PlatformSharedPreferenceService --> SVM : Returns **ServiceResult**
+    deactivate PlatformSharedPreferenceService
+    alt #POSITIVERESPONSE if(StatusCode from ServiceResult is 201 or OK)
+        SVM -> SVM : Set the value for **retrievelStatus** as **true**
+        SVM -> SVM : Set the content from the **ServiceResult** to the variable listOfNotes 
+        SVM --> C : Returns 
+    else #NEGATIVEERESPONSE
+        SVM -> SVM : Set the **StatusCode** from **ServiceResult** to the variable **errorCode**
+        SVM -> C : Returns
+    end 
+else #NEGATIVEERESPONSE CATCH
+    S -> S : write log Exceptions
+    S --> U : Returns
+    deactivate U
+    deactivate S
+end
+==PSEUDOCODE - retriveListOfNotes(String Key)==
+hnote across
+    TRY
+
+        SET the value for the variable **retrievelStatus** as **false**
+
+        INVOKE **retriveData(String key)** and pass values to the parameter
+
+        IF StatusCode from ServiceResult is 201 or OK
+
+            SET the value for the variable **retrievelStatus** as **true**
+
+            SET the content from the **ServiceResult** to the variable listOfNotes
+
+        ELSE 
+
+            SET the **StatusCode** from **ServiceResult** to the variable **errorCode**
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+
+
+end note
+
+
+
+
+
+newpage sort the list using the title of notes.
+autonumber 1
+hide footbox
+C -> SVM : Invoke **sortNotesList()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Invoke the method **sort()** using the list **listOfNotes** 
+    SVM -> SVM : Inside **sort()** method using **compareTo()** compare the title of notes and sort it in asceding order\n and store it in **sortedListOfNotes**
+    SVM -> C : Returns
+else #NEGATIVEERESPONSE CATCH
+    S -> S : write log Exceptions
+    S --> U : Returns
+    deactivate U
+    deactivate S
+end
+==PSEUDOCODE - sortNotesList())==
+hnote across
+    TRY
+
+        SORT using **sort()** to the list **listOfNotes** and using **compareTo()** compare the title of the notes and sort in ascending order
+
+        STORE the sorted list in **sortedListOfNotes** 
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+
+end note
+
+
+
+
+
+newpage Back to Home button
+autonumber
+hide footbox
+C -> SVM : Invoke **navigateToHomeScreen()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Add the page route and content in the Stream.
+else #NEGATIVEERESPONSE CATCH 
+    S -> S : write log Exceptions
+    S --> U : Returns
+    deactivate U
+    deactivate S
+end
+== PESUDOCODE - navigateToHomeScreen()==
+hnote across
+
+    TRY
+
+        ADD the event **NavigatorPop()** to the navigation stream object
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
+
+
+
+
+
+newpage dispose the streams
+autonumber
+hide footbox
+C -> SVM : Invoke **disposeStreams()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Invoke **CloseNavigationStream()**
+else #NEGATIVEERESPONSE CATCH 
+    S -> S : write log Exceptions
+    S --> U : Returns
+    deactivate U
+    deactivate S
+end
+== PESUDOCODE - disposeStreams()==
+hnote across
+
+    TRY
+
+        INVOKE **CloseNavigationStream()**
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note

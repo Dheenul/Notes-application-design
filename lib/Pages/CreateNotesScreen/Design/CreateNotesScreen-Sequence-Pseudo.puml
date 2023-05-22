@@ -18,77 +18,215 @@ skinparam sequence{
 title Initial State
 autonumber 1
 hide footbox
-participant User as U
+actor User as U
+' participant User as U
 participant CreateNotesScreen as S
-U -> S : Invokes initState() 
+U -> S : Invoke **initState()** 
 activate U
 activate S
-S -> S : Start the stream **titleTextEditingController** to listen
-alt #NUETRALRESPONSE if (event == AddText)
-    S -> S: Assign the event's data as titleTextEditingController text
-    S -> S: Collapse the selection
-    note right
-        To get the correct cursor
-        position, use the collapsed built-in
-        method to make the selection to the last
-    end note
-    S --> U: Displays the text in title field
+alt TRY
+    S -> S : Start the stream **titleTextEditingController** to listen
+    alt #POSITIVERESPONSE if (event == AddText)
+        S -> S: Assign the event's data as titleTextEditingController text
+        S -> S: Collapse the selection
+        note right
+            To get the correct cursor
+            position, use the collapsed built-in
+            method to make the selection to the last
+        end note
+        S --> U: Displays the text in title field
+    end
+    S -> S : Start the stream **descriptionTextEditingController** to listen
+    alt #POSITIVERESPONSE if(event == AddText)
+        S -> S: Assign the event's data as _descriptionTextEditingController text
+        S -> S: Collapse the selection
+        note right
+            To get the correct cursor
+            position, use the collapsed built-in
+            method to make the selection to the last
+        end note
+        S --> U: Displays the text in description field
+    end
+    S -> S : Start the stream **navigationStream** to listen
+    alt #POSITIVERESPONSE if(event == NavigatorPop)
+        S -> S : Pop to the Home screen
+        S --> U : Display the HomeScreen to the user
+    end 
+else #NEGATIVEERESPONSE CATCH
+    S -> S : write log Exceptions
+    S --> U : Returns
+    deactivate U
+    deactivate S
 end
-S -> S : Start the stream **descriptionTextEditingController** to listen
-alt #NUETRALRESPONSE if(event == AddText)
-    S -> S: Assign the event's data as _descriptionTextEditingController text
-    S -> S: Collapse the selection
-    note right
-        To get the correct cursor
-        position, use the collapsed built-in
-        method to make the selection to the last
-    end note
-    S --> U: Displays the text in description field
-end
-S -> S : Start the stream **navigationStream** to listen
-alt #NUETRALRESPONSE if(event == NavigatorPop)
-    S -> S : Pop to the Home screen
-    S --> U : Display the HomeScreen to the user
-end 
-deactivate U
-deactivate S
+==PSEUDOCODE - initState()==
+hnote across
+
+    TRY
+
+        ADD listener to the **titleTextEditingController** and listen to the events in the stream
+
+        IF event is **AddText**
+
+            Assign the event's data as titleTextEditingController text
+
+            Collapse the selection. To get the cursor position at last, use collapsed built-in method to make the selectoin to the last
+        
+        ADD listener to the **descriptionTextEditingController** and listen to the events in the stream
+
+        IF event is **AddText**
+
+            Assign the event's data as descriptionTextEditingController text
+
+            Collapse the selection. To get the cursor position at last, use collapsed built-in method to make the selectoin to the last
+        
+        ADD listener to the **navigationStream** and listen to the events in the stream
+
+        IF event is **NavgatorPop**
+
+            Pop to the home screen
+        
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+
+end hnote
+
+
+
+
 
 newpage title field
 participant CreateNotesScreenVM as SVM
 autonumber 1
 hide footbox
-U -> S : TextFormField.Clicked
+U -> S : **TextFormField.Clicked**
 activate U
 activate S
-S -> SVM : Invokes **updateTitle(required String title)**
+S -> SVM : Invoke **updateTitle(String title)**
 activate SVM
 SVM --> S : Returns
 deactivate SVM
-S --> U : Returns
+S --> U : Display the text in the text form field to the user
 deactivate S
 deactivate U
+
+==PSEUDOCODE -updateTitle(String title)==
+hnote across
+
+    INVOKE **updateTitle(String title)** 
+
+    DISPLAY the text in the text form field to the user 
+
+end note
+
+
+
+
 
 newpage description field
 autonumber 1
 hide footbox
-U -> S : TextFormField.Clicked
+U -> S : **TextFormField.Clicked**
 activate U
 activate S
-S -> SVM : Invokes **updateDescription(required String description)**
+S -> SVM : Invoke **updateDescription(String description)**
+activate SVM
+SVM --> S : Returns
+deactivate SVM
+S --> U : Display the text in the text form field
+deactivate S
+deactivate U
+==PSEUDOCODE - updateDescription(String description)==
+hnote across
+
+    INVOKE **updateDescription(String description)** 
+
+    DISPLAY the text in the text form field to the user 
+    
+end note
+
+
+
+
+
+newpage On click of Create Notes button
+autonumber 1
+hide footbox
+U -> S : **Create Notes button.clicked**
+activate U
+activate S
+S -> SVM : Invoke **createNewNote(String enteredTitle, String enteredDescription)**
+activate SVM
+SVM --> S : Returns
+deactivate SVM
+alt #POSITIVERESPONSE if(visibilityStatus == true)
+    alt #POSITIVERESPONSE if(CreationStatus == true) 
+        S --> U : Display the success message "Successfully Created" to the user
+        else #NEGATIVEERESPONSE
+        S --> U : Display the error code with error message "Creation failed" to the user
+    end
+end
+==PSEUDOCODE - updateDescription(String description)==
+hnote across
+
+    INVOKE **createNewNote(String enteredTitle, String enteredDescription)** 
+
+    IF **CreationStatus** is true 
+
+        DISPLAY the success message "Successfully Created" to the user
+
+    ELSE 
+
+        DISPLAY the error code with error message "Creation failed" to the user
+
+end note
+
+
+
+
+newpage On click of Back to Home button
+autonumber 1
+hide footbox
+U -> S : Back to Home button.clicked
+S -> SVM : Invoke **navigateToHomeScreen()**
+activate SVM
+SVM --> S : Returns
+deactivate SVM
+S --> U : Display Home Screen to the user
+deactivate S
+deactivate U
+==PSEUDOCODE - Back to Home button.clicked==
+hnote across
+
+    INVOKE **navigateToHomeScreen()** 
+
+    DISPLAY the Home Screen to the user
+
+end note
+
+
+
+
+newpage dispose method
+autonumber 1
+hide footbox
+U -> S : Invoke **dispose()**
+activate U
+activate S
+S -> SVM : Invoke **disposeStreams()**
 activate SVM
 SVM --> S : Returns
 deactivate SVM
 S --> U : Returns
 deactivate S
 deactivate U
-
-newpage On click of Back to Home button
-autonumber 1
-hide footbox
-U -> S : Create Notes button.clicked
-activate
-==PSEUDOCODE==
+==PSEUDOCODE - dispose()==
 hnote across
-end hnote
+
+    INVOKE **disposeStreams()** 
+
+end note
+
+
 
 @enduml

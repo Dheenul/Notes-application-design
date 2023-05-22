@@ -1,0 +1,236 @@
+@startuml CreateNotesScreen-VM-Sequence
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title Constructor()
+autonumber 1
+hide footbox
+participant Caller as C
+participant CreateNotesScreenVM as SVM
+C -> SVM: Invoke **CreateNotesScreenVM()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM: Assign the **title** as "" \n and **description** as "" to observable variables
+    SVM --> C: Returns
+else #NEGATIVEERESPONSE CATCH
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+    ==PESUDOCODE - CreateNotesScreenVM()==
+    hnote across
+
+        TRY
+
+            INITALIZE the value of variable **title** and **description** as empty **" "**
+
+        CATCH
+
+            INVOKE **writeException()** on the exception object **ex**
+            
+    end note
+
+
+
+newpage creating a new note
+autonumber 1
+hide footbox
+C -> SVM : Invoke **createNewNote(String enteredTitle, String enteredDescription)**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : set **creationStatus** value to **false**
+    SVM -> SVM : create a instance of NoteBO and assign the value of variable \n**title** and ** description** to the instance
+    SVM -> SVM : add the instance to the list **listOfNotes** using **add()** method 
+    SVM -> SVM : set **visibilityStatus** value as **true**
+    SVM -> PlatformSharedPreferenceService : Invoke **saveNote(String key, List<NoteBO> value)** \n and pass values to the parameters.
+    activate PlatformSharedPreferenceService
+    PlatformSharedPreferenceService --> SVM : Return **ServiceResult**
+    deactivate PlatformSharedPreferenceService
+    alt #POSITIVERESPONSE if(StatusCode from ServiceResult is 201)
+        SVM -> SVM :  Set **creationStatus** value as **true**
+    else #NEGATIVEERESPONSE 
+        SVM -> SVM : Set the status code value from service result to **errorCode**
+    end
+    SVM  --> C : Returns 
+else #NEGATIVEERESPONSE CATCH
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+==PESUDOCODE - createNewNote(String enteredTitle, String enteredDescription)==
+hnote across
+
+    TRY
+
+        SET **creationStatus** value as **false**   
+
+        CREATE an instance of NoteBO and assign the value of variable **title** and ** description** to the instance 
+
+        ADD the instance to the list named **listOfNotes** using **add()** method
+
+        INVOKE **saveNote(String key, List<NoteBO> value)** and pass values to the parameters.
+
+        SET **visibilityStatus** value as **true**
+
+        IF (StatusCode from ServiceResult is 201)
+
+            SET **creationStatus** value as **true**
+
+        ELSE
+
+            SET the status code value from service result to the variable **errorCode**
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
+
+
+
+
+
+newpage Update title
+autonumber 1
+hide footbox
+C -> SVM: Invoke **updateTitle(String title)**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM: Assign value to the parameter named **title**
+    SVM -> SVM: Add the observale variable **title** inside the AddText event
+    SVM --> C : Returns
+else #NEGATIVEERESPONSE CATCH
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+==PESUDOCODE - updateTitle(String title)==
+hnote across
+
+    TRY
+
+        ASSIGN the value of the parameter **title** to the observable variable **title**
+
+        ADD the observale variable **title** inside the AddText event
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
+
+
+
+
+newpage Update description
+autonumber 1
+hide footbox
+C -> SVM: Invoke **updateDescription(String description)**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM: Assign value to the parameter named **description**
+    SVM -> SVM: Add the observale variable **description** inside the AddText event.
+    SVM --> C : Returns
+else #NEGATIVEERESPONSE CATCH
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+==PESUDOCODE - updateDescription(String description)==
+hnote across
+
+    TRY
+
+        ASSIGN the value of the parameter **description** to the observable variable **description**
+
+        ADD the observale variable **description** inside the AddText event
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
+
+
+
+
+
+newpage Back to Home button
+autonumber 1
+hide footbox
+C -> SVM : Invoke **navigateToHomeScreen()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Navigate to **HomeScreen**.
+else #NEGATIVEERESPONSE CATCH 
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+== PESUDOCODE - navigateToHomeScreen()==
+hnote across
+
+    TRY
+
+        ADD the event **NavigatorPop()** to the navigation stream object
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
+
+
+
+
+
+newpage dispose the streams
+autonumber 1
+hide footbox
+C -> SVM : Invoke **disposeStreams()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Invoke **closeTextMixin()**
+    SVM -> SVM : Invoke **CloseNavigationStream()**
+else #NEGATIVEERESPONSE CATCH 
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+== PESUDOCODE - disposeStreams()==
+hnote across
+
+    TRY
+
+        INVOKE **closeTextMixin()**
+
+        INVOKE **CloseNavigationStream()**
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note

@@ -1,0 +1,103 @@
+@startuml CreateNotesScreen-VM-Sequence
+!define POSITIVERESPONSE 90EE90
+!define NEGATIVEERESPONSE EFBBBB
+!define NUETRALRESPONSE F2DC79
+
+skinparam sequence{
+    ParticipantBackgroundColor #A7BEAE
+    LifeLineBackgroundColor #E7E8D1
+    LifeLineBorderColor #2C5F2D
+    ActorBackgroundColor #FC766AFF
+    ActorBorderColor #FC766AFF
+    ArrowColor #B85042
+    ArrowFontColor #234E70
+}
+
+title navigate to create notes screen
+autonumber 1
+hide footbox
+C -> SVM : Invoke **navigateToCreateNotesScreen()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Navigate to **CreateNotesScreen**
+else #NEGATIVEERESPONSE CATCH 
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+== PESUDOCODE - navigateToCreateNotesScreen()==
+hnote across
+
+    TRY
+
+        ADD the event **NavigatorPush()** to the navigation stream object along with **parameter(pageConfig : Pages.CreateNotesScreen, extraData : "")**
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
+
+
+
+
+
+newpage navigate to Notes list screen
+autonumber 1
+hide footbox
+C -> SVM : Invoke **navigateToNotesListScreen()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Add the page route and content into the Stream.
+else #NEGATIVEERESPONSE CATCH 
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+== PESUDOCODE - navigateToNotesListScreen()==
+hnote across
+
+    TRY
+
+        ADD the event **NavigatorPush()** to the navigation stream object along with **parameter(pageConfig : Pages.NotesListScreen, extraData : "")**
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
+
+
+
+
+
+newpage dispose the streams
+autonumber 1
+hide footbox
+C -> SVM : Invoke **disposeStreams()**
+activate C
+activate SVM
+alt #POSITIVERESPONSE TRY
+    SVM -> SVM : Invokes **CloseNavigationStream()**
+else #NEGATIVEERESPONSE CATCH 
+    SVM -> SVM : write logs Exception
+    SVM --> C : Returns
+    deactivate SVM
+    deactivate C 
+end
+== PESUDOCODE - disposeStreams()==
+hnote across
+
+    TRY
+
+        INVOKE **CloseNavigationStream()**
+
+    CATCH
+
+        INVOKE **writeException()** on the exception object **ex**
+        
+end note
